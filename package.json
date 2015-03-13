@@ -1,7 +1,7 @@
 {
-  "name": "node-celery",
-  "version": "0.2.2",
-  "description": "Celery client for Node",
+  "name": "node-celery-redis",
+  "version": "0.0.1",
+  "description": "Celery client for Node - redis backend ",
   "author": {
     "name": "Mher Movsisyan",
     "email": "mher.movsisyan@gmail.com"
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/mher/node-celery.git"
+    "url": "https://github.com/dial-once/node-celery-redis"
   },
   "devDependencies": {
     "mocha": "*"
@@ -45,27 +45,14 @@
     }
   ],
   "bugs": {
-    "url": "https://github.com/mher/node-celery/issues"
+    "url": "https://github.com/dial-once/node-celery-redis/issues"
   },
-  "homepage": "https://github.com/mher/node-celery",
-  "_id": "node-celery@0.2.2",
-  "dist": {
-    "shasum": "0549dea5347fe3ea1ab87f61c9d8cbb5132175a8",
-    "tarball": "http://registry.npmjs.org/node-celery/-/node-celery-0.2.2.tgz"
-  },
-  "_from": "node-celery@",
-  "_npmVersion": "1.3.14",
-  "_npmUser": {
-    "name": "mher",
-    "email": "mher.movsisyan@gmail.com"
-  },
+  "homepage": "https://github.com/dial-once/node-celery-redis",
   "maintainers": [
     {
-      "name": "mher",
-      "email": "mher.movsisyan@gmail.com"
+      "name": "pukoren",
+      "email": "github.koren@pukogames.com"
     }
   ],
-  "directories": {},
-  "_shasum": "0549dea5347fe3ea1ab87f61c9d8cbb5132175a8",
-  "_resolved": "https://registry.npmjs.org/node-celery/-/node-celery-0.2.2.tgz"
+  "directories": {}
 }
