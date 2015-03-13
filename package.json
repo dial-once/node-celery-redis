@@ -1,58 +1,20 @@
 {
-  "name": "node-celery-redis",
-  "version": "0.0.1",
-  "description": "Celery client for Node - redis backend ",
-  "author": {
-    "name": "Mher Movsisyan",
-    "email": "mher.movsisyan@gmail.com"
-  },
-  "dependencies": {
-    "amqp": "*",
-    "node-uuid": "*",
-    "redis": "*"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/dial-once/node-celery-redis"
-  },
-  "devDependencies": {
-    "mocha": "*"
-  },
-  "engine": "node >= 0.8.2",
-  "main": "celery.js",
-  "contributors": [
-    {
-      "name": "=================================="
+    "name": "node-celery-redis",
+    "version": "0.0.2",
+    "description": "Celery client for Node",
+    "author": "Mher Movsisyan <mher.movsisyan@gmail.com>",
+    "dependencies": {
+        "amqp": "*",
+        "node-uuid": "*",
+        "redis": "*"
     },
-    {
-      "name": "AUTHORS",
-      "url": "in chronological order"
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/dial-once/node-celery-redis"
     },
-    {
-      "name": "=================================="
+    "devDependencies": {
+        "mocha": "*"
     },
-    {
-      "name": "Mher Movsisyan"
-    },
-    {
-      "name": "Esco Obong"
-    },
-    {
-      "name": "Jeffrey Luyau"
-    },
-    {
-      "name": "Mihail Mikov"
-    }
-  ],
-  "bugs": {
-    "url": "https://github.com/dial-once/node-celery-redis/issues"
-  },
-  "homepage": "https://github.com/dial-once/node-celery-redis",
-  "maintainers": [
-    {
-      "name": "pukoren",
-      "email": "github.koren@pukogames.com"
-    }
-  ],
-  "directories": {}
+    "engine": "node >= 0.8.2",
+    "main": "celery.js"
 }

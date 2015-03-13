@@ -1,12 +1,4 @@
-# Celery client for Node.js - REDIS BACKEND FORK
-
-# READ THIS BEFORE USE
-
-This package is a fork of node-celery with redis backend PR merged, used while PR has not been merged
-Use it with caution and keep in mind this is a temporary package
-Original repo: https://github.com/mher/node-celery/
-
-# ORIGINAL README
+# Celery client for Node.js
 
 Celery is an asynchronous task/job queue based on distributed
 message passing. node-celery allows to queue tasks from Node.js.
@@ -43,6 +35,30 @@ Queue.declare: (406) PRECONDITION_FAILED.
 var celery = require('node-celery'),
 	client = celery.createClient({
 		CELERY_TASK_RESULT_DURABLE: false
+	});
+```
+
+For RabbitMQ backends, the entire broker options can be passed as an object that is handed off to AMQP.
+This allows you to specify parameters such as SSL keyfiles, vhost, and connection timeout among others.
+
+```javascript
+var celery = require('node-celery'),
+	client = celery.createClient({
+		CELERY_BROKER_OPTIONS: {
+			host: 'localhost',
+			port: '5672',
+			login: 'guest',
+			password: 'guest',
+			authMechanism: 'AMQPLAIN',
+			vhost: '/',
+			ssl: {
+				enabled: true,
+				keyFile: '/path/to/keyFile.pem',
+				certFile: '/path/to/certFile.pem',
+				caFile: '/path/to/caFile.pem'
+			}
+		},
+		CELERY_RESULT_BACKEND: 'amqp'
 	});
 ```
 
@@ -152,7 +168,4 @@ client.on('connect', function() {
 	}); // sends a task to the default queue
 });
 ```
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/mher/node-celery/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
