@@ -4,6 +4,7 @@
 
 This package is a fork of node-celery with redis backend PR merged, used while PR has not been merged
 Use it with caution and keep in mind this is a temporary package
+Original repo: https://github.com/mher/node-celery/
 
 # ORIGINAL README
 
