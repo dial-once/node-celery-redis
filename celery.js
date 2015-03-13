@@ -2,7 +2,6 @@ var url = require('url'),
     util = require('util'),
     amqp = require('amqp'),
     redis = require('redis'),
-    assert = require('assert'),
     events = require('events')
     uuid = require('node-uuid');
 
@@ -21,6 +20,7 @@ function Configuration(options) {
     }
 
     self.BROKER_URL = self.BROKER_URL || 'amqp://';
+    self.BROKER_OPTIONS = self.BROKER_OPTIONS || { url: self.BROKER_URL, heartbeat: 580 }
     self.DEFAULT_QUEUE = self.DEFAULT_QUEUE || 'celery';
     self.DEFAULT_EXCHANGE = self.DEFAULT_EXCHANGE || '';
     self.DEFAULT_EXCHANGE_TYPE = self.DEFAULT_EXCHANGE_TYPE || 'direct';
@@ -48,10 +48,9 @@ function Client(conf) {
     self.backend_connected = false;
 
     debug('Connecting to broker...');
-    self.broker = amqp.createConnection({
-        url: self.conf.BROKER_URL,
-        heartbeat: 580
-    }, {
+    self.broker = amqp.createConnection(
+      self.conf.BROKER_OPTIONS
+      , {
         defaultExchangeName: self.conf.DEFAULT_EXCHANGE
     });
 
@@ -111,14 +110,14 @@ function Client(conf) {
 
 util.inherits(Client, events.EventEmitter);
 
-Client.prototype.createTask = function(name, options) {
-    return new Task(this, name, options);
+Client.prototype.createTask = function(name, options, exchange) {
+    return new Task(this, name, options, exchange);
 };
 
 Client.prototype.end = function() {
-    this.broker.end();
-    if (this.broker !== this.backend) {
-        this.backend.end();
+    this.broker.disconnect();
+    if (this.backend && this.broker !== this.backend) {
+        this.backend.quit();
     }
 };
 
@@ -141,14 +140,14 @@ Client.prototype.call = function(name /*[args], [kwargs], [options], [callback]*
     var task = this.createTask(name),
         result = task.call(args, kwargs, options);
 
-    if (callback) {
+    if (callback && result) {
         debug('Subscribing to result...');
         result.on('ready', callback);
     }
     return result;
 };
 
-function Task(client, name, options) {
+function Task(client, name, options, exchange) {
     var self = this;
 
     self.client = client;
@@ -160,14 +159,20 @@ function Task(client, name, options) {
 
     self.publish = function (args, kwargs, options, callback) {
         var id = options.id || uuid.v4();
-        
-        self.client.broker.publish(
-            self.options.queue || queue || self.client.conf.DEFAULT_QUEUE,
-            createMessage(self.name, args, kwargs, options, id), {
-                'contentType': 'application/json',
-                'contentEncoding': 'utf-8'
-            },
-            callback);
+
+        queue = options.queue || self.options.queue || queue || self.client.conf.DEFAULT_QUEUE;
+        var msg = createMessage(self.name, args, kwargs, options, id);
+        var pubOptions = {
+            'contentType': 'application/json',
+            'contentEncoding': 'utf-8'
+        };
+
+        if (exchange) {
+            exchange.publish(queue, msg, pubOptions, callback);
+        } else {
+            self.client.broker.publish(queue, msg, pubOptions, callback);
+        }
+
         return new Result(id, self.client);
     };
 }
@@ -179,8 +184,12 @@ Task.prototype.call = function(args, kwargs, options, callback) {
     kwargs = kwargs || {};
     options = options || self.options || {};
 
-    assert(self.client.ready);
-    return self.publish(args, kwargs, options, callback);
+    if (!self.client.ready) {
+        self.client.emit('error', 'Client is not ready');
+    }
+    else {
+        return self.publish(args, kwargs, options, callback);
+    }
 };
 
 function Result(taskid, client) {
@@ -204,6 +213,10 @@ function Result(taskid, client) {
             function (q) {
                 q.bind(self.client.conf.RESULT_EXCHANGE, '#');
                 q.subscribe(function (message) {
+                    if (message.contentType === 'application/x-python-serialize') {
+                        console.error('Celery should be configured with json serializer');
+                        process.exit(1);
+                    }
                     self.result = message;
                     //q.unbind('#');
                     debug('Emiting ready event...');
